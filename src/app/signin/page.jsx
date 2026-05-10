@@ -1,7 +1,7 @@
 "use client";
 import { authClient } from "@/lib/auth-client";
 import { Check } from "@gravity-ui/icons";
-import { useRouter } from "next/navigation";
+import { Icon } from "@iconify/react";
 
 import {
     Button,
@@ -14,49 +14,33 @@ import {
     TextField,
 } from "@heroui/react";
 
-export default function SignUpPage() {
-
-    const router = useRouter();
-
+export default function SignInPage() {
     const onSubmit = async (e) => {
         e.preventDefault();
 
-        const name = e.target.name.value;
-        const image = e.target.image.value;
         const email = e.target.email.value;
         const password = e.target.password.value;
 
-        const { data, error } = await authClient.signUp.email({
-            name,
+        const { data, error } = await authClient.signIn.email({
             email,
             password,
-            image,
-        })
+            callbackURL: "/",
+        });
 
-        console.log(data, error)
+        console.log({ data, error });
+    };
 
-        if (!error) {
-            router.push("/")
-        }
+    const signIn = async () => {
+        await authClient.signIn.social({
+            provider: "google",
+        });
     };
 
     return (
-        <Card className="border mx-auto w-125 py-10 mt-5">
-            <h1 className="text-center text-2xl font-bold">Sign Up</h1>
+        <Card className="border mx-auto text-center w-125 py-10 mt-5">
+            <h1 className="text-center text-2xl font-bold">Sign In</h1>
 
             <Form className="flex w-96 mx-auto flex-col gap-4" onSubmit={onSubmit}>
-                <TextField isRequired name="name" type="text">
-                    <Label>Name</Label>
-                    <Input placeholder="Enter your name" />
-                    <FieldError />
-                </TextField>
-
-                <TextField isRequired name="image" type="text">
-                    <Label>Image URL</Label>
-                    <Input placeholder="Image URL" />
-                    <FieldError />
-                </TextField>
-
                 <TextField
                     isRequired
                     name="email"
@@ -111,6 +95,13 @@ export default function SignUpPage() {
                     </Button>
                 </div>
             </Form>
+
+            <p>OR</p>
+
+            <Button onClick={signIn} className="w-full" variant="tertiary">
+                <Icon icon="devicon:google" />
+                Sign in with Google
+            </Button>
         </Card>
     );
 }
